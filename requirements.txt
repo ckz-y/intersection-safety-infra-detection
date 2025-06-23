@@ -2,3 +2,7 @@ loguru
 typer
 tqdm
 jupyter
+pandas
+osmnx
+matplotlib
+geopy
