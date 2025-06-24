@@ -11,7 +11,6 @@ from geopy import distance
 # from intersection_safety_infra_detection.config import PROCESSED_DATA_DIR, RAW_DATA_DIR
 from config import RAW_DATA_DIR, INTERIM_DATA_DIR
 
-
 app = typer.Typer()
 
 
@@ -55,7 +54,7 @@ def generate_intersections(
             new_intersection = station_row.copy()
             intersection_lat = intersection_data["y"]
             intersection_lon = intersection_data["x"]
-            
+
             if (
                 distance.great_circle(
                     (station_lat, station_lon), (intersection_lat, intersection_lon)
@@ -68,10 +67,22 @@ def generate_intersections(
     output_data = pd.DataFrame(
         data=intersection_data_list, columns=intersection_data_cols
     )
-    output_data = output_data.drop("Unnamed: 0", axis=1)
     output_data.to_csv(output_path)
 
     logger.success("Intersections generated.")
+
+
+@app.command()
+def existing_stations(
+    input_path: Path = RAW_DATA_DIR / "intersections.csv",
+    output_path: Path = INTERIM_DATA_DIR / "existing_stations_intersections.csv",
+):
+    all_intersections = pd.read_csv(input_path, index_col=0)
+    all_intersections = all_intersections[
+        all_intersections["buffer"] == "Existing Transit"
+    ]
+
+    all_intersections.to_csv(output_path)
 
 
 @app.command()
