@@ -79,7 +79,7 @@ def existing_stations(
 ):
     all_intersections = pd.read_csv(input_path, index_col=0)
     all_intersections = all_intersections[
-        all_intersections["buffer"] == "Existing Transit"
+        all_intersections["Buffer"] == "Existing Transit"
     ]
 
     for i in range(2015, 2025):
