@@ -74,7 +74,7 @@ def generate_intersections(
 
 @app.command()
 def existing_stations(
-    input_path: Path = RAW_DATA_DIR / "intersections.csv",
+    input_path: Path = INTERIM_DATA_DIR / "intersections.csv",
     output_path: Path = INTERIM_DATA_DIR / "existing_stations_intersections.csv",
 ):
     all_intersections = pd.read_csv(input_path, index_col=0)
