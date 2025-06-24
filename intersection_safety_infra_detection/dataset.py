@@ -82,6 +82,9 @@ def existing_stations(
         all_intersections["buffer"] == "Existing Transit"
     ]
 
+    for i in range(2015, 2025):
+        all_intersections[str(i)] = np.nan
+
     all_intersections.to_csv(output_path)
 
 
