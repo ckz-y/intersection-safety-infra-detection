@@ -82,9 +82,6 @@ def filter_and_format_data(
         all_intersections["Buffer"] == "Existing Transit"
     ]
 
-    for i in range(2015, 2025):
-        all_intersections[str(i)] = np.nan
-
     all_intersections = all_intersections.reset_index(names="Station_ID")
     all_intersections["temp_col"] = (
         all_intersections["Inter_Latitude"].astype(str)
@@ -92,7 +89,11 @@ def filter_and_format_data(
         + all_intersections["Inter_Longitude"].astype(str)
     )
     all_intersections["Intersection_ID"] = all_intersections["temp_col"].factorize()[0]
-    all_intersections.drop("temp_col", axis=1)
+    all_intersections = all_intersections.drop("temp_col", axis=1)
+
+    for i in range(2015, 2025):
+        all_intersections[str(i)] = np.nan
+
     all_intersections.to_csv(output_path)
 
 
