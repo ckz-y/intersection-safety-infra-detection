@@ -37,15 +37,15 @@ def generate_intersections(
                 network_type="drive",
                 retain_all=True,
             )
+        # No intersections found in bounding box.
         except ValueError:
             continue
         except:
-            print(
+            logger.exception(
                 "Unknown error with station:",
                 (station_row["Latitude"], station_row["Longitude"]),
             )
 
-        # iterate through nodes in new graph
         station_lat = station_row["Latitude"]
         station_lon = station_row["Longitude"]
         station_row = station_row.to_list()
@@ -73,7 +73,7 @@ def generate_intersections(
 
 
 @app.command()
-def existing_stations(
+def filter_and_format_data(
     input_path: Path = INTERIM_DATA_DIR / "intersections.csv",
     output_path: Path = INTERIM_DATA_DIR / "existing_stations_intersections.csv",
 ):
@@ -85,24 +85,21 @@ def existing_stations(
     for i in range(2015, 2025):
         all_intersections[str(i)] = np.nan
 
+    all_intersections = all_intersections.reset_index(names="Station_ID")
+    all_intersections["temp_col"] = (
+        all_intersections["Inter_Latitude"].astype(str)
+        + "_"
+        + all_intersections["Inter_Longitude"].astype(str)
+    )
+    all_intersections["Intersection_ID"] = all_intersections["temp_col"].factorize()[0]
+    all_intersections.drop("temp_col", axis=1)
     all_intersections.to_csv(output_path)
 
 
 @app.command()
-def main(
-    # ---- REPLACE DEFAULT PATHS AS APPROPRIATE ----
-    input_path: Path = RAW_DATA_DIR / "dataset.csv",
-    output_path: Path = INTERIM_DATA_DIR / "dataset.csv",
-    # ----------------------------------------------
-):
-    # # ---- REPLACE THIS WITH YOUR OWN CODE ----
-    # logger.info("Processing dataset...")
-    # for i in tqdm(range(10), total=10):
-    #     if i == 5:
-    #         logger.info("Something happened for iteration 5.")
-    # logger.success("Processing dataset complete.")
-    # # -----------------------------------------
-    pass
+def main():
+    generate_intersections()
+    filter_and_format_data()
 
 
 if __name__ == "__main__":
