@@ -6,3 +6,6 @@ pandas
 osmnx
 matplotlib
 geopy
+requests
+arcgis
+arcgis-mapping

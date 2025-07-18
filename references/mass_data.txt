@@ -1,0 +1,15 @@
+Directions for extracting Massachusetts data using QGIS.
+0. Add the Massachusetts shapefile as a Vector layer.
+1. Identify WMTS link (ex. https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/orthos2021/MapServer/WMTS/1.0.0/WMTSCapabilities.xml). 
+    Add WMTS to map.
+2. Open 'Projects' > 'New Print Layout'. Name the new layout.
+3. Right click on the paper and select 'Page Properties'. Change the size to 200 mm 
+    x 200 mm.
+4. Click the 'Add Map' icon and drag the map over the full paper.
+5. Open 'Atlas' > 'Atlas Settings'. Open the 'Atlas' panel on the right. Check the 
+    'Generate an atlas' box. Choose the desired coverage layer. Check the 
+    'Hidden coverage layer' box. Uncheck the 'Single file export when possible' box. 
+    Change the filename expression to "Inter_ID"||'_[year]'.
+6. Open the 'Image Properties' panal on the right. Check the 'Controlled by Atlas' box.
+    Change the margin to 0%.
+7. Open 'Atlas' > 'Export Atlas as Images'. Set the page height and width to 416 px.
