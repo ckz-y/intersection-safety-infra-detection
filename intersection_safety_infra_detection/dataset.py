@@ -9,6 +9,7 @@ from config import INTERIM_DATA_DIR, RAW_DATA_DIR
 
 # from intersection_safety_infra_detection.config import PROCESSED_DATA_DIR, RAW_DATA_DIR
 from geopy import distance
+from geopy.geocoders import Nominatim
 from loguru import logger
 from osmnx.utils_geo import bbox_from_point
 from pyproj import Transformer
@@ -100,7 +101,7 @@ def filter_and_format_data(
     all_intersections["Intersection_ID"] = all_intersections["temp_col"].factorize()[0]
     all_intersections = all_intersections.drop(["temp_col", "Buffer"], axis=1)
 
-    for i in range(2015, 2025):
+    for i in range(2012, 2025):
         all_intersections[str(i)] = 0
 
     all_intersections.to_csv(output_path, index=False)
@@ -312,6 +313,18 @@ def download_images(
 
     logger.success("Images downloading complete.")
 
+@app.command()
+def finalize_csv(
+    input_path: Path = INTERIM_DATA_DIR / "data_availability.csv",
+    output_path: Path = INTERIM_DATA_DIR / "stations_inscope.csv",
+):
+    existing_stations = pd.read_csv(input_path)
+    existing_stations = existing_stations[existing_stations.iloc[:, 10:].sum(axis=1) != 0]
+
+    
+    geolocator = Nominatim(user_agent="geoapiExercises")
+
+    existing_stations.to_csv(output_path, index=False)
 
 @app.command()
 def main():
