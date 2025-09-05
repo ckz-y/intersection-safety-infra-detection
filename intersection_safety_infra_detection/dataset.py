@@ -313,18 +313,21 @@ def download_images(
 
     logger.success("Images downloading complete.")
 
+
 @app.command()
 def finalize_csv(
     input_path: Path = INTERIM_DATA_DIR / "data_availability.csv",
     output_path: Path = INTERIM_DATA_DIR / "stations_inscope.csv",
 ):
     existing_stations = pd.read_csv(input_path)
-    existing_stations = existing_stations[existing_stations.iloc[:, 10:].sum(axis=1) != 0]
+    existing_stations = existing_stations[
+        existing_stations.iloc[:, 10:].sum(axis=1) != 0
+    ]
 
-    
     geolocator = Nominatim(user_agent="geoapiExercises")
 
     existing_stations.to_csv(output_path, index=False)
+
 
 @app.command()
 def main():
