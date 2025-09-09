@@ -5,7 +5,7 @@ import osmnx as ox
 import pandas as pd
 import requests
 import typer
-from config import INTERIM_DATA_DIR, RAW_DATA_DIR
+from config import PROCESSED_DATA_DIR, INTERIM_DATA_DIR, RAW_DATA_DIR
 
 # from intersection_safety_infra_detection.config import PROCESSED_DATA_DIR, RAW_DATA_DIR
 from geopy import distance
@@ -16,6 +16,7 @@ from pyproj import Transformer
 from tqdm import tqdm
 from PIL import Image
 from io import BytesIO  # To read image from bytes
+import os
 
 app = typer.Typer()
 logger.add("logs/dataset_{time}.log", backtrace=True, diagnose=False)
@@ -92,7 +93,7 @@ def filter_and_format_data(
         ~all_intersections["Agency"].str.contains("Amtrak")
     ]
 
-    all_intersections = all_intersections.reset_index(names="Station_ID")
+    all_intersections = all_intersections.reset_index()
     all_intersections["temp_col"] = (
         all_intersections["Inter_Latitude"].astype(str)
         + "_"
@@ -317,16 +318,23 @@ def download_images(
 @app.command()
 def finalize_csv(
     input_path: Path = INTERIM_DATA_DIR / "data_availability.csv",
-    output_path: Path = INTERIM_DATA_DIR / "stations_inscope.csv",
+    output_path: Path = PROCESSED_DATA_DIR / "stations_inscope.csv",
 ):
-    existing_stations = pd.read_csv(input_path)
-    existing_stations = existing_stations[
-        existing_stations.iloc[:, 10:].sum(axis=1) != 0
-    ]
+    data = pd.read_csv(input_path)
+    data.iloc[:, 9:] = 0
 
-    geolocator = Nominatim(user_agent="geoapiExercises")
+    all_images = os.listdir(
+        "C:/Users/ckaz3/Desktop/intersection-safety-infra-detection/data/raw/all-images"
+    )
+    for img_name in tqdm(all_images):
+        intersection_id, year = img_name.split(".")[0].split("_")
+        data.loc[data["Intersection_ID"] == int(intersection_id), year] = 1
 
-    existing_stations.to_csv(output_path, index=False)
+    data = data[data.iloc[:, 9:].sum(axis=1) != 0]
+
+    logger.info("CSV upload starting.")
+    data.to_csv(output_path, index=False)
+    logger.success("CSV successfully uploaded.")
 
 
 @app.command()
